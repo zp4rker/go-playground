@@ -1,0 +1,11 @@
+.DS_Store
+
+.idea/
+*.iml
+
+long_running
+proc_launch
+proc_check
+
+outfile
+errfile
