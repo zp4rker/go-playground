@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,6 +10,13 @@ import (
 )
 
 func main() {
+	goFile := flag.String("go-file", "long_running.go", "the go file to execute")
+	flag.Parse()
+
+	inFile, err := os.Create("infile")
+	if err != nil {
+		panic(err.Error())
+	}
 	outFile, err := os.Create("outfile")
 	if err != nil {
 		panic(err.Error())
@@ -21,7 +29,7 @@ func main() {
 	attr := &os.ProcAttr{
 		Dir:   "",
 		Env:   nil,
-		Files: []*os.File{os.Stdin, outFile, errFile},
+		Files: []*os.File{inFile, outFile, errFile},
 		Sys:   nil,
 	}
 
@@ -34,7 +42,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	proc, err := os.StartProcess(bin, strings.Fields("go run long_running.go"), attr)
+	proc, err := os.StartProcess(bin, strings.Fields(fmt.Sprintf("go run %v", *goFile)), attr)
 	if err != nil {
 		panic(err.Error())
 	}

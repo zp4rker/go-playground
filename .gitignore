@@ -7,5 +7,6 @@ long_running
 proc_launch
 proc_check
 
+infile
 outfile
 errfile
