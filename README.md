@@ -1,2 +1,2 @@
-# go-playground
-My personal Go playground.
+# unix-sockets
+A simple test of communicating between processes with unix sockets.
