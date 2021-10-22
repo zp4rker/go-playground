@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/google/shlex"
 	"net"
 	"os"
 	"strings"
@@ -76,7 +75,7 @@ func handleConnection(conn net.Conn, quit chan bool) {
 		n, err = conn.Read(buf)
 		if n > 0 {
 			input := string(buf[:n])
-			output := handleInput(&username, input, quit)
+			output := handleInput(input, quit)
 			if output != "" {
 				msg := fmt.Sprintf("[%v]: %v", username, output)
 				broadcast(msg)
@@ -85,30 +84,12 @@ func handleConnection(conn net.Conn, quit chan bool) {
 	}
 }
 
-func handleInput(username *string, input string, quit chan bool) string {
-	if input[0] == '/' {
-		parts, err := shlex.Split(input[1:])
-		if err != nil {
-			return ""
-		}
-		cmd, args := strings.ToLower(parts[0]), make([]string, 0)
-		if len(parts) > 1 {
-			args = parts[1:]
-		}
-		switch cmd {
-		case "close", "quit":
-			quit <- true
-			return ""
-		case "username":
-			if len(args) == 1 {
-				oldUsername := *username
-				newUsername := args[0]
-				username = &newUsername
-				return fmt.Sprintf("Changed username from '%v'", oldUsername)
-			}
-		}
+func handleInput(input string, quit chan bool) string {
+	switch strings.ToLower(input) {
+	case "/close", "/quit":
+		quit<- true
 		return ""
-	} else {
+	default:
 		return input
 	}
 }
