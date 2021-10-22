@@ -20,27 +20,41 @@ func main() {
 	}
 	defer listener.Close()
 
-	for {
-		conn, err := listener.Accept()
-		if err != nil {
-			panic(err.Error())
-		}
+	newConn := make(chan net.Conn)
+	quit := make(chan bool, 1)
 
-		if !handleConnection(conn) {
-			break
+	go func() {
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				panic(err.Error())
+			}
+
+			newConn<- conn
+		}
+	}()
+
+	loop: for {
+		select {
+		case <-quit:
+			break loop
+		case conn := <-newConn:
+			handleConnection(conn, quit)
 		}
 	}
 }
 
-func handleConnection(conn net.Conn) bool {
-	buf := make([]byte, 512)
+func handleConnection(conn net.Conn, close chan bool) {
+	username := "Client"
+
+	buf := make([]byte, 1024)
 	nr, err := conn.Read(buf)
 	if err != nil {
 		panic(err.Error())
 	}
 
 	input := string(buf[:nr])
-	fmt.Printf("[Client]: %v\n", input)
+	fmt.Printf("[%v]: %v\n", username, input)
 	if input == "close" {
 		fmt.Println("Closing connection now...")
 		_, err := conn.Write([]byte("Closing connection now..."))
@@ -48,12 +62,11 @@ func handleConnection(conn net.Conn) bool {
 			panic(err.Error())
 		}
 		conn.Close()
-		return false
+		close<- true
 	} else {
 		_, err := conn.Write(buf[:nr])
 		if err != nil {
 			panic(err.Error())
 		}
-		return true
 	}
 }

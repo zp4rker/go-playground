@@ -19,7 +19,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	buf := make([]byte, 512)
+	buf := make([]byte, 1024)
 	nr, err := conn.Read(buf)
 	if err != nil {
 		panic(err.Error())
