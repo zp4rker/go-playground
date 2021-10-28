@@ -85,7 +85,7 @@ func handleConnection(conn net.Conn, quit chan bool) {
 }
 
 func handleInput(input string, quit chan bool) string {
-	switch strings.ToLower(input) {
+	switch strings.ToLower(strings.TrimSpace(input)) {
 	case "/close", "/quit":
 		quit<- true
 		return ""

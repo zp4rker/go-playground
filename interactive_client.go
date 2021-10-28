@@ -16,12 +16,12 @@ func main() {
 	}
 
 	go func() {
-		buf := make([]byte, 1024)
-		var n int
+		rd := bufio.NewReader(conn)
+		var str string
 		var err error
 		for err == nil {
-			n, err = conn.Read(buf)
-			fmt.Print(string(buf[:n]))
+			str, err = rd.ReadString('\n')
+			fmt.Print(str)
 		}
 	}()
 
