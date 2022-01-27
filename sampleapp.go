@@ -12,7 +12,7 @@ func main() {
 	router.LoadHTMLGlob("templates/*.html")
 
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil)
+		c.HTML(http.StatusOK, "index.html", gin.H{"Title": "Sample Webpage"})
 	})
 
 	router.POST("/form", func(c *gin.Context) {
